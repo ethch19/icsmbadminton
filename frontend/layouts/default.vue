@@ -1,6 +1,6 @@
-<script setup lang="ts">
-import "~/assets/css/index.css"
-</script>
+<style>
+@import url("~/assets/css/header.css");
+</style>
 
 <template>
     <header>
@@ -8,9 +8,8 @@ import "~/assets/css/index.css"
         <span>
             <NuxtLink to="/">Home</NuxtLink>
             <NuxtLink to="/">About</NuxtLink>
-            <NuxtLink to="/">Membership</NuxtLink>
-            <NuxtLink to="/">Teams</NuxtLink>
-            <NuxtLink to="/">Socials</NuxtLink>
+            <NuxtLink to="/membership">Membership</NuxtLink>
+            <NuxtLink to="/">Gallery</NuxtLink>
         </span>
     </header>
     <slot />

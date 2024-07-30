@@ -27,35 +27,10 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 0;
 }
 
 html {
     font-size: 13px;
-}
-
-.title{
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 900;
-    text-transform: uppercase;
-}
-
-.text{
-    font-family: 'Dubai', sans-serif;
-    font-weight: 400;
-    font-size: 1.1rem;
-    line-height: 120%;
-    margin: 0 0 1rem;
-}
-
-.text.footer{
-    font-weight: 500;
-    color: var(--footer-txt-colour);
-}
-
-font.author {
-    color: var(--footer-author-colour);
-    font-style: italic;
 }
 
 .checkbox-container .text{
@@ -92,12 +67,10 @@ font.author {
 }
 
 header {
-    display: inline-flex;
     width: 100%;
     height: 2.7rem;
     align-items: center;
     justify-content: center;
-    margin: 1rem 0;
     gap: 0.5rem;
 }
 
@@ -121,9 +94,7 @@ span.form-header {
 }
 
 .logo {
-    aspect-ratio: 1/1;
     height: 100%;
-    display: inline-block;
 }
 
 .form {
@@ -152,11 +123,9 @@ button {
     border-radius: 0.7rem;
     border: 0;
     padding: 0.5rem 0.7rem;
-    font-family: 'Open Sans', sans-serif;
     font-weight: 500;
     text-wrap: nowrap;
     font-size: 0.8rem;
-    cursor: pointer;
 }
 
 button.t1 {

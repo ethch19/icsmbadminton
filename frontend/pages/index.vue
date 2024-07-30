@@ -19,3 +19,7 @@ definePageMeta({
         </div>
     </main>
 </template>
+
+<style>
+@import url("~/assets/css/index.css");
+</style>

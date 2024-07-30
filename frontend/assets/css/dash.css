@@ -20,28 +20,11 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 0;
     height: inherit;
     width: inherit;
 }
 
-html {
-    font-size: 20px;
-    height: 100vh;
-}
-
-button {
-    all: unset;
-}
-
-#__nuxt {
-    height: 100%;
-    width: 100%;
-}
-
 header {
-    display: inline-flex;
-    flex-direction: row;
     width: calc(100% - 4rem);
     height: 5rem;
     align-items: center;
@@ -50,7 +33,6 @@ header {
     margin: 0;
     gap: 0.5rem;
     background-color: var(--dash-header-bg-colour);
-    font-family: 'Open Sans', sans-serif;
 }
 
 header h2 {
@@ -177,18 +159,8 @@ div.page-container {
     padding: 1.5rem 2.5rem;
 }
 
-.title {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 900;
-    text-transform: uppercase;
-}
 
 .text {
-    font-family: 'Dubai', sans-serif;
-    font-weight: 400;
-    font-size: 1.1rem;
-    line-height: 120%;
-    margin: 0 0 1rem;
     color: var(--dash-txt-colour);
 }
 
@@ -204,25 +176,8 @@ div.page-container {
     margin: 0;
 }
 
-.text.footer {
-    display: inline-block;
-    color: var(--footer-txt-colour);
-    text-align: center;
-    font-weight: 500;
-    font-size: 0.8rem;
-    margin: 0;
-    padding: 0.5rem;
-}
-
-.author {
-    color: var(--footer-author-colour);
-    font-style: italic;
-}
-
 .logo {
-    aspect-ratio: 1/1;
     height: 5rem;
-    display: inline-block;
 }
 
 .sidebar {

@@ -1,0 +1,64 @@
+-
+  name: Standard
+  price: "35"
+  feature:
+    - content: Access to Social Sessions
+      bold: 
+        - Social Sessions
+    - content: Register for our Annual Tour*
+      bold: 
+        - Annual Tour*
+    - content: Exclusive invitation to Social Events
+      bold: 
+        - Social Events
+    - content: Members-Only Discounts on partnered businesses
+      bold: 
+        - Members-Only Discounts
+  link: https://www.imperialcollegeunion.org/shop/csp/badminton-icsm/badminton-icsm-membership-23-24
+-
+  name: Team
+  price: "50"
+  header:
+    text: MUST have Standard Membership
+    bold:
+      - MUST
+      - Standard Membership
+    colour: "#FAF7ED"
+    bgcolour: "#545851"
+  feature:
+    - content: Exclusive Teams-Only Sessions
+      bold:
+        - Teams-Only
+    - content: Compete in BUCS & LUSL fixtures
+      bold: 
+        - BUCS & LUSL fixtures
+    - content: Participate in NAMs tournaments
+      bold: 
+        - NAMs tournaments
+    - content: Dedicated Teams-Only Merchandise
+      bold: 
+        - Merchandise
+    - content: Everything in Standard Membership
+  link: https://www.imperialcollegeunion.org/shop/csp/badminton-icsm/team-membership-add
+-
+  name: Committee
+  price: "FREE"
+  header:
+    text: Exclusive
+    bold:
+      - Exclusive
+    colour: "#FAF7ED"
+    bgcolour: "#898E88"
+  feature:
+    - content: Personalised Committee Merchandise
+      bold:
+        - Committee Merchandise
+    - content: Something to put on your CV
+    - content: Turn your ideas into actions in making the club better
+      bold: 
+        - ideas
+        - actions
+    - content: Learn how to run a club/society at Imperial
+      bold: 
+        - Learn
+  link: https://www.imperialcollegeunion.org/representation/elections
