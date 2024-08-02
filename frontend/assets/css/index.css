@@ -1,195 +1,32 @@
-body {
-    background: url("/img/sec-bg.svg");
-    margin: 0;
+.landing-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6rem;
 }
 
-html {
-    font-size: 20px;
-    height: 100vh;
+.jumbo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5rem;
+    padding: 1rem 15rem;
 }
 
-button {
-    all: unset;
-    background: var(--btn-colour);
-    padding: 0.3rem 0.8rem;
-    border-radius: 0.5rem;
-    color: var(--btn-txt-colour);
-    font-family: 'Open Sans', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 500;
-    cursor: pointer;
+.jumbo-img {
+    width: 25rem;
+    padding: 1rem 0 0 0;
 }
 
-span.title-container {
-    direction: row;
-}
-
-span.title-container::after {
+.title-container::after {
     content: url("/img/badminton-racket.svg");
     display: block;
     width: 30rem;
     transform: translate(-12rem, 8rem);
 }
 
-div.jumbo {
+.scroll-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    gap: 5rem;
-    padding: 1rem 15rem;
-    margin: 5rem 0;
-    z-index: 1;
-}
-
-div.collage {
-    display: inline-grid;
-    grid-template-rows: auto;
-    grid-template-columns: auto;
-    width: 30rem;
-    justify-content: center;
-    margin: 4rem;
-}
-
-div.collage img {
-    grid-area: 1 / 1 / 1 / 1;
-    display: block;
-    position: relative;
-    max-width: 60%;
-    max-height: 60%;
-    aspect-ratio: auto;
-    border-radius: 1rem;
-    z-index: 1;
-}
-
-div.collage img.main-collage {
-    z-index: 0;
-    width: inherit;
-    height: auto;
-    max-width: none;
-    max-height: none;
-}
-
-div.collage img.left-collage {
-    left: 65%;
-    top: 50%;
-}
-
-div.collage img.right-collage {
-    right: 5%;
-    top: 50%;
-}
-
-div.content-box {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transform: translateY(-2rem);
-    margin: 6rem;
-}
-
-div.content-box div.row {
-    display: flex;
-    flex-direction: row;
-    position: relative;
-    top: 12%;
-}
-
-div.page-container {
-    margin: 0;
-    padding: 1.5rem 2.5rem;
-}
-
-div.section {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 9rem 0;
-    padding: 0 2rem;
-}
-
-img {
-    border: 0.2rem solid var(--img-border-colour);
-}
-
-img.main {
-    border: 0;
-    width: 25rem;
-    padding: 1rem 0 0 0;
-}
-
-img.racket {
-    border: 0;
-    width: 20rem;
-    height: 10rem;
-}
-
-div.content-box img {
-    border: none;
-    width: 9rem;
-    height: 8rem;
-}
-
-.title {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 900;
-    text-transform: uppercase;
-}
-
-.subtitle {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 900;
-    color: var(--subtitle-colour);
-    margin: 0 0 0 3rem;
-    padding: 0;
-    font-size: 2rem;
-    text-transform: uppercase;
-} 
-
-div.content-box .subtitle {
-    align-self: center;
-    transform: translateY(1rem);
-}
-
-div.jumbo .title {
-    color: var(--title-colour);
-    font-size: 5rem;
-    line-height: 4.5rem;
-    margin: 1rem 0;
-    text-align: left;
-}
-
-.text {
-    font-family: 'Dubai', sans-serif;
-    font-weight: 400;
-    font-size: 1.1rem;
-    line-height: 120%;
-    padding: 1rem;
-    margin: 0 0 1rem;
-    color: var(--txt-colour);
-}
-
-div.content-box .text {
-    background: var(--box-bg-colour);
-    border-radius: 1rem;
-    padding: 3rem 1rem 1rem 1rem;
-}
-
-.text.footer {
-    display: inline-block;
-    color: var(--footer-txt-colour);
-    text-align: center;
-    font-weight: 500;
-    font-size: 0.8rem;
-    margin: 0;
-    padding: 0.5rem;
-}
-
-.author {
-    color: var(--footer-author-colour);
-    font-style: italic;
-}
-
-.author:hover {
-    text-decoration-line: underline;
-    text-decoration-thickness: 2px;
+    margin: 5rem 9rem;
 }

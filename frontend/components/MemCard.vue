@@ -43,23 +43,27 @@ for (const i in props.text) {
 </script>
 
 <template>
-    <div class="mem-container" :class="{ 'container-border': headerBool }" :style="{ 'border-color': headerBgColour }">
+    <div class="mem-container flex-column" :class="{ 'container-border': headerBool }" :style="{ 'border-color': headerBgColour }">
         <div v-if="headerBool" :style="{ 'border-color': headerBgColour, 'background-color': headerBgColour }" class="mem-header">
-            <p v-html="nHeaderText" :style="{ 'color': headerColour }"></p>
+            <p class="mem-header-title text" v-html="nHeaderText" :style="{ 'color': headerColour }"></p>
         </div>
         <div class="mem-sub">
-            <div class="mem-main">
-                <h2>{{ name }}</h2>
-                <p>£<span class="mem-price">{{ price }}</span>/yr</p>
+            <div class="mem-main flex-column">
+                <h3 class="subhead">{{ name }}</h3>
+                <h3 class="mem-main-price subhead">£<span class="mem-price">{{ price }}</span>/yr</h3>
             </div>
             <div class="sep-line"/>
-            <div class="feature-container">
+            <div class="feature-container flex-column">
                 <div v-for="textHtml in text" class="mem-feature">
-                    <img src="/img/tick.svg"/>
-                    <p v-html="textHtml"></p>
+                    <img class="feature-img" src="/img/tick.svg"/>
+                    <p class="text" v-html="textHtml"></p>
                 </div>
             </div>
-            <a :href="link" class="button">Buy</a>
+            <a :href="link" target="_blank" class="primary-button">Buy</a>
         </div>
     </div>
 </template>
+
+<style scoped>
+@import url("~/assets/css/memcard.css");
+</style>

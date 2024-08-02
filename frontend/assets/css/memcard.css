@@ -1,0 +1,95 @@
+:root{
+    --sep-line-colour: #E8E5DB;
+}
+
+.mem-container {
+    background-color: var(--bg-box-colour);
+    border-radius: 1rem;
+    width: 19rem;
+}
+
+.mem-container p,h3 {
+    margin: 0;
+    padding: 0;
+}
+
+.container-border {
+    border: 1px solid;
+    box-sizing: border-box;
+}
+
+.mem-header {
+    position: absolute;
+    box-sizing: border-box;
+    height: 3rem;
+    width: inherit;
+    border: 1px solid;
+    transform: translate(-1px, -2rem);
+    border-radius: 1rem 1rem 0 0;
+    z-index: -1;
+    padding: var(--margin-xxs);
+}
+
+.mem-header .text-bold {
+    font-weight: 900;
+}
+
+.mem-header-title {
+    text-wrap: nowrap;
+    text-align: center;
+}
+
+.mem-sub {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem;
+}
+
+.mem-main {
+    gap: var(--margin-xxs);
+}
+
+.mem-main-price {
+    font-weight: 400;
+}
+
+.mem-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.sep-line {
+    display: inline-flex;
+    background-color: var(--sep-line-colour);
+    height: 3px;
+    width: 100%;
+    border-radius: 1rem;
+    align-self: center;
+}
+
+.feature-container {
+    padding: 0 0.5rem;
+    margin: 0.3rem 0 0.6rem 0;
+    gap: 0.3rem;
+}
+
+.feature-container .text {
+    font-size: 0.8rem;
+    text-wrap: wrap;
+    line-height: 1.3rem;
+    text-align: start;
+}
+
+.mem-feature {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.feature-img {
+    aspect-ratio: 1;
+    width: 0.7rem;
+    align-self: start;
+    transform: translateY(0.3rem);
+}

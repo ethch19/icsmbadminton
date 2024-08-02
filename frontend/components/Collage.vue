@@ -8,8 +8,12 @@ const prop = defineProps<{
 
 <template>
     <div class="collage">
-        <img class="main-collage" :src=mainimg />
-        <img class="left-collage" :src=leftimg />
-        <img class="right-collage" :src=rightimg />
+        <img class="main-collage collage-img" :src=mainimg />
+        <img class="left-collage collage-img" :src=leftimg />
+        <img class="right-collage collage-img" :src=rightimg />
     </div>
 </template>
+
+<style scoped>
+@import url("~/assets/css/collage.css");
+</style>
