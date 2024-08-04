@@ -68,11 +68,12 @@
     color: var(--footer-author-colour);
 }
 
-.credit .author {
+.author {
     font-style: italic;
+    cursor: pointer;
 }
 
-.credit .author:hover {
+.author:hover {
     text-decoration-line: underline;
     text-decoration-thickness: 2px;
 }
