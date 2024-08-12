@@ -1,7 +1,19 @@
 <script setup lang="ts">
-definePageMeta({
-    layout: "default"
-})
+import { vIntersectionObserver } from "@vueuse/components";
+const mainContainer = ref(null);
+
+const { data } = await useAsyncData("photos-info", () => queryContent("/landing-photos").findOne());
+const info = data.value.body;
+
+function onIntersectionObserver([{ isIntersecting, target }]: IntersectionObserverEntry[]) {
+    if (isIntersecting) {
+        target.classList.add("show-box");
+    }
+}
+
+function scroll(event) {
+    mainContainer.value.scrollIntoView({behavior: "smooth", block: "start"});
+}
 </script>
 
 <template>
@@ -9,13 +21,20 @@ definePageMeta({
         <div class="jumbo">
             <span class="title-container" >
                 <h1 class="title align-left">ICSM<br/> Badminton</h1>
-                <button class="primary-button">Find out more</button>
+                <button @click="scroll" class="primary-button button">Find out more</button>
             </span>
             <img class="jumbo-img" src="/img/badminton-players.svg" />
         </div>
-        <div class="scroll-container">
-            <Collage mainimg="/img/gallery/social-main.jpg" leftimg="/img/gallery/social-left.jpg" rightimg="/img/gallery/social-right.jpg" />
-            <ContentBlock img="/img/underground.svg" boxPadding="3rem var(--margin-xl) var(--margin-xl)"  subtitle="Social Events" paragraph="Welcome to the friendliest, most exciting, up and coming clubs at ICSM! We welcome people of all subjects (not just medics) and have a wide mix of ages and abilities. It's the best of both worlds! Whether you want to play competitively, in one of our four highly competitive teams or just want some casual exercise with your friends – there’s something for everyone! For team members, we host training twice a week and weekly games run by our fabulous team captains!"/>
+        <div ref="mainContainer" class="flex-column main-container">
+            <Suspense>
+                <section v-for="block in info" v-intersection-observer="onIntersectionObserver" class="content-box flex-row hidden-box" :class="{ 'box-reverse': block.reverse}">
+                    <Collage v-bind="block.photos"/>
+                    <ContentBlock v-bind="block.content" boxPadding="3rem var(--margin-xl) var(--margin-xl)"/>
+                </section>
+            </Suspense>
+        </div>
+        <div class="flex-row ending">
+            <h2 class="subtitle landing-ending">No better reason to join us!</h2>
         </div>
     </main>
 </template>

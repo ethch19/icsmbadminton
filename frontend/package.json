@@ -12,14 +12,18 @@
   "dependencies": {
     "@nuxt/content": "^2.13.2",
     "@nuxt/image": "^1.7.0",
+    "@vueuse/components": "^10.11.1",
+    "@vueuse/core": "^10.11.1",
     "animejs": "^3.2.2",
-    "nuxt": "^3.10.1",
-    "vue": "^3.4.15",
-    "vue-router": "^4.2.5"
+    "vue": "^3.4.35",
+    "vue-router": "^4.4.0"
   },
   "overrides": {
     "nuxt": {
       "@parcel/watcher": "2.1.0"
     }
+  },
+  "devDependencies": {
+    "nuxt": "^3.12.4"
   }
 }

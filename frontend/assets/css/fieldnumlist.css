@@ -1,0 +1,57 @@
+.field-num-list {
+    gap: var(--margin-xs);
+}
+
+.num-list {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    padding: 0;
+    margin: 0;
+    gap: 0.25rem;
+    justify-content: space-between;
+}
+
+.field {
+    width: 2rem;
+    padding: 0;
+    text-align: center;
+}
+
+@media (max-width: 1200px) {
+.field-num-list {
+    width: 45%;
+}
+.num-list {
+    gap: 2%;
+    justify-content: start;
+}
+.field {
+    width: 10%;
+    height: 2.5rem;
+}
+}
+
+@media (max-width: 992px) {
+}
+
+@media (max-width: 768px) {
+.field-num-list {
+    width: 100%;
+}
+.field {
+    width: 2rem;
+    height: 2.5rem;
+}
+}
+
+@media (max-width: 480px) {
+.field {
+    width: 10%;
+    height: 2.5rem;
+    padding: 0;
+}
+}
+
+@media (max-width: 360px) {
+}
+

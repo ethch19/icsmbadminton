@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const props = defineProps<{
-    subtitle: string,
-    paragraph: string,
-    img?: string,
+    title: string,
+    text: string,
+    logo?: string,
     subtitleHeight?: string,
     boxPadding?: string,
 }>()
@@ -16,10 +16,10 @@ if (typeof props.img == "undefined") {
 <template>
     <div  class="content-box flex-column">
         <div class="content-box-header flex-row">
-            <img class="content-box-logo" v-if="imgBool" :src="img"/>
-            <h2 class="subtitle">{{ subtitle }}</h2>
+            <img class="content-box-logo" v-if="imgBool" :src="logo"/>
+            <h2 class="subtitle">{{ title }}</h2>
         </div>
-        <p class="text">{{ paragraph  }}</p>
+        <p class="text">{{ text  }}</p>
     </div>
 </template>
 

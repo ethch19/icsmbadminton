@@ -1,7 +1,3 @@
-:root{
-    --sep-line-colour: #E8E5DB;
-}
-
 .mem-container {
     background-color: var(--bg-box-colour);
     border-radius: 1rem;

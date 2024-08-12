@@ -10,9 +10,10 @@
     grid-area: 1 / 1 / 1 / 1;
     display: block;
     position: relative;
-    max-width: 40%;
-    max-height: 55%;
-    aspect-ratio: auto;
+    max-width: 30rem;
+    max-height: 30rem;
+    aspect-ratio: 3/2;
+    object-fit: cover;
     border-radius: 1rem;
     z-index: 1;
     border: 3px solid var(--img-border-colour);
@@ -20,18 +21,9 @@
 
 .main-collage {
     z-index: 0;
-    width: inherit;
-    height: auto;
-    max-width: none;
-    max-height: none;
 }
 
-.left-collage {
-    left: 65%;
-    top: 50%;
-}
-
-.right-collage {
-    right: 5%;
-    top: 50%;
+.left-collage, .right-collage {
+    max-width: 15rem;
+    max-height: 15rem;
 }

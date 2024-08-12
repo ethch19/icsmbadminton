@@ -1,7 +1,10 @@
 <script setup lang="ts">
 definePageMeta({
-    layout: "dash"
-})
+    layout: "dash",
+    pageTransition: {
+        name: "dash",
+    },
+});
 </script>
 
 <template>
@@ -11,3 +14,7 @@ definePageMeta({
         </div>
     </div>
 </template>
+
+<style scoped>
+@import url("~/assets/css/dash-page.css");
+</style>

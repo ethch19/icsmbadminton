@@ -200,7 +200,7 @@ function seekAnimations(event) {
                 </svg>
             </div>
             <div class="block-container">
-                <ContentBlock v-for="(item, index) in items" :class="'content-box'+index" :subtitleHeight="'1.2rem'" :boxPadding="'1.5rem'" :subtitle="item.title" :paragraph="item.text"/>
+                <ContentBlock v-for="(item, index) in items" :class="'content-box'+index" :subtitleHeight="'1.2rem'" :boxPadding="'1.5rem'" v-bind="item"/>
                 <img v-for="n in 4" class="photo" :class="'photo'+n" :src="'/img/gallery/about-'+n+'.jpg'"/>
                 <img v-for="n in 3" class="silhouette" :class="'silo'+n" :src="'/img/silhouette'+n+'.svg'"/>
                 <img class="net" src="/img/badminton-net.svg"/>
@@ -208,7 +208,7 @@ function seekAnimations(event) {
             <div class="end-container flex-row">
                 <div class="join-container flex-column">
                     <h2 class="subhead join-h2">Start your journey with us my drilla</h2>
-                    <a class="linkbutton primary-button" href="https://www.imperialcollegeunion.org/activities/a-to-z/badminton-icsm" target="_blank">Find out more</a>
+                    <a class="linkbutton button primary-button" href="https://www.imperialcollegeunion.org/activities/a-to-z/badminton-icsm" target="_blank">Find out more</a>
                 </div>
             </div>
         </div>

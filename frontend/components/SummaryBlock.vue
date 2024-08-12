@@ -1,10 +1,10 @@
 <template>
     <div class="summary-block">
         <p class="text stat-num">{{ num }}</p>
-        <span class="column">
+        <div class="flex-column">
             <p class="text stat">{{ line1 }}</p>
             <p class="text stat">{{ line2 }}</p>
-        </span>
+        </div>
     </div>
 </template>
 
@@ -15,3 +15,7 @@ const props = defineProps<{
     num: number
 }>()
 </script>
+
+<style scoped>
+@import url("~/assets/css/summaryblock.css");
+</style>

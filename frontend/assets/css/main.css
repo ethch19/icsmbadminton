@@ -23,44 +23,90 @@
     --radius-l: 1.25rem;
     --radius-xl: 1.75rem;
 
+    /* dash colours */
+    --dash-bg-colour: #FAFAFA;
+    --dash-bg-h1-colour: #A0BCA3;
+    --dash-bg-box-colour: #FFFFFF;
+    --dash-header-bg-colour: #415944;
+    --dash-header-h1-colour: #FAFAFA;
+    --dash-header-h2-colour: #BACDC0;
+    --dash-sidebar-bg-colour: #FFFFFF;
+    --dash-sidebar-mobile-bg-colour: #C9D2C8;
+    --dash-sidebar-mobile-current-colour: #769079;
+    --dash-h1-colour: #FAFCF9;
+    --dash-txt-colour: #434742;
+
     /* colours */
     --bg-10-colour: #F0F8EF;
     --bg-20-colour: #FAFCF9;
     --bg-box-colour: #FAF7ED;
+    --bg-form-colour: #FFFEF6;
+    --bg-formbox-colour: #FFFFFF;
+    --bg-field-colour: #F8FAF7;
+    --bg-field-focus-colour: #EFF3EE;
+    --drop-shadow-colour: hsl(100 35% 30% / 0.3);
     --txt-colour: #464B3D;
+    --txt-field-colour: #3E423F;
+    --txt-join-colour: #A3B9A0;
     --title-colour: #474244;
     --subtitle-colour: #545851;
-    --btn-colour: #83AE8D;
+    --subtitle-form-colour: #687A63;
+    --btn-10-colour: #83AE8D;
+    --btn-11-colour: #739A7C;
+    --btn-20-colour: #C3D1C7;
+    --btn-21-colour: #B0BDB4;
+    --btn-30-colour: #CFDCD0;
+    --btn-31-colour: #415944;
     --btn-txt-colour: #F9FFF8;
     --img-border-colour: #535356;
+    --field-border-colour: #E8E8E8;
+    --field-hover-border-colour: #B1BBB0;
+    --field-focus-border-colour: #1d5928;
     --header-footer-bold-colour: #42523E;
     --footer-txt-colour: #ADB9B0;
     --footer-author-colour: #93A193;
+    --sep-line-colour: #E8E5DB;
+    --grey-txt-colour: #C4CCC4;
 
     /* landing */
     --ff: "Open Sans", sans-serif;
+    --ff2: "Dubai", sans-serif;
     --a: 700 1rem/1.4rem var(--ff);
     --h1: 900 5rem/6.5rem var(--ff);
     --h2: 700 2.5rem/3.5rem var(--ff);
     --h3: 700 1.5rem/2.1rem var(--ff);
     --p: 400 1rem/1.6rem var(--ff);
     --btn: 500 1.1rem/1.75rem var(--ff);
+    --input: 400 1.1rem/1.75rem var(--ff2);
 }
 
 body {
     margin: 0;
 }
 
-.primary-button {
+.button {
     font: var(--btn);
     cursor: pointer;
-    background-color: var(--btn-colour);
-    color: var(--btn-txt-colour);
     border-radius: var(--radius-xs);
     padding: 0.3rem 0.8rem;
     border: none;
     text-align: center;
     text-decoration: none;
+}
+
+.primary-button {
+    background-color: var(--btn-10-colour);
+    color: var(--btn-txt-colour);
+}
+
+.secondary-button {
+    background-color: var(--btn-20-colour);
+    color: var(--btn-txt-colour);
+}
+
+.tertiary-button {
+    background-color: var(--btn-30-colour);
+    color: var(--btn-31-colour);
 }
 
 .flex-column {
@@ -127,4 +173,33 @@ body {
 
 .text-bold {
     font-weight: 600;
+}
+
+.field-label {
+    text-transform: none;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.6rem;
+    margin: 0;
+    padding: 0;
+}
+
+.field {
+    background-color: var(--bg-field-colour);
+    border: 1px solid var(--field-border-colour);
+    border-radius: var(--radius-s);
+    height: 2.5rem;
+    font: var(--input);
+    color: var(--field-txt-colour);
+}
+
+.field:hover {
+    border-color: var(--field-hover-border-colour);
+}
+
+.field:focus {
+    appearance: none;
+    outline: none;
+    border-color: var(--field-focus-border-colour);
+    background-color: var(--bg-field-focus-colour);
 }

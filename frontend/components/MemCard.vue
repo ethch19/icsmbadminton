@@ -59,7 +59,7 @@ for (const i in props.text) {
                     <p class="text" v-html="textHtml"></p>
                 </div>
             </div>
-            <a :href="link" target="_blank" class="primary-button">Buy</a>
+            <a :href="link" target="_blank" class="primary-button button">Buy</a>
         </div>
     </div>
 </template>

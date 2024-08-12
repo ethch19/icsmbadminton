@@ -118,7 +118,7 @@
 
 .join-h2 {
     text-align: center;
-    color: #A3B9A0;
+    color: var(--txt-join-colour);
     font-size: 2.5rem;
     font-weight: 900;
     margin: 0;

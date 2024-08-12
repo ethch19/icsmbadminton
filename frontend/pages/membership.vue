@@ -68,7 +68,7 @@ rawItems.forEach((x) => {
     <main>
         <h1 class="title text-center">Membership</h1>
         <div class="opt-container">
-            <MemCard v-for="item in items" :name="item.name" :price="item.price" :text="item.text" :boldText="item.boldText" :headerText="item.headerText" :headerBold="item.headerBold" :headerColour="item.headerColour" :headerBgColour="item.headerBgColour" :link="item.link"/>
+            <MemCard v-for="item in items" v-bind="item"/>
         </div>
     </main>
 </template>
