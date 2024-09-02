@@ -7,48 +7,52 @@
 .jumbo {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 5rem;
-    padding: 1rem 15rem;
+    padding: 0 var(--side-padding);
 }
 
 .jumbo-img {
     width: 25rem;
-    padding: 1rem 0 0 0;
 }
 
 .title-container::after {
+    position: absolute;
     content: url("/img/badminton-racket.svg");
     display: block;
     width: 30rem;
-    transform: translate(-12rem, 8rem);
+    top: 45%;
+    left: 10%;
 }
 
 .main-container {
-    gap: 10vh;
+    gap: 30vh;
+    margin: 10vh 0;
 }
 
-.content-box {
-    justify-content: space-between;
-    margin: 5rem 9rem;
+.content-container {
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 10vw;
 }
 
-.hidden-box {
+.hidden-container {
     opacity: 0;
     transition: all 0.4s;
 }
 
-.show-box {
+.show-container {
     opacity: 1;
 }
 
-.box-reverse {
+.container-reverse {
     flex-direction: row-reverse;
 }
 
 .ending {
     justify-content: center;
-    margin: 0 0 15vh 0;
+    margin: 0 0 5vh 0;
 }
 
 .landing-ending {
@@ -59,21 +63,72 @@
     margin: 0;
 }
 
-@media (max-width: 320px) {
 
+@media (max-width: 1200px) {
+    .jumbo {
+        padding: 0 var(--xl-padding);
+        gap: 0;
+    }
+    .title-container::after {
+        left: unset;
+        top: 12rem;
+        right: 12%;
+        width: 35vw;
+    }
+    .jumbo-img {
+        margin-left: auto;
+    }
+    .content-container {
+        justify-content: space-between;
+        row-gap: 6vh;
+        margin: 10vw;
+    }
+    .content-block {
+        margin-left: auto;
+        margin-top: 5rem;
+    }
+    .content-block-reverse {
+        margin-right: auto;
+        margin-top: 5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .content-container {
+        justify-content: center;
+        margin: 0;
+    }
+    .content-block {
+        margin: 0;
+    }
+    .content-block-reverse {
+        margin: 0;
+    }
+    .landing-ending {
+        max-width: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+    .title-container::after {
+        top: 9rem;
+    }
+    .jumbo {
+        padding: 0 var(--s-padding);
+    }
+    .title {
+        font-size: 3.2rem;
+        line-height: 4.5rem;
+    }
+    .jumbo-img {
+        width: 60vw;
+    }
 }
 
 @media (max-width: 480px) {
 
 }
 
-@media (max-width: 768px) {
-
-}
-
-@media screen and (max-width: 992px) {
-
-}
-@media screen and (max-width: 1200px) {
+@media (max-width: 320px) {
 
 }

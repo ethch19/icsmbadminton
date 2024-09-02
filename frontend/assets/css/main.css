@@ -4,7 +4,8 @@
 
 :root {
     /* font */
-    font-size: 20px;
+    font-size: 18px;
+    --m-font-size: 16px;
 
     /* margins or padding */
     --margin-xxs: .25rem;
@@ -68,15 +69,22 @@
     --sep-line-colour: #E8E5DB;
     --grey-txt-colour: #C4CCC4;
 
+    /* padding */
+    --side-padding: 20vw;
+    --xl-padding: 15vw;
+    --s-padding: 10vw;
+    --xs-padding: 5vw;
+
     /* landing */
     --ff: "Open Sans", sans-serif;
     --ff2: "Dubai", sans-serif;
     --a: 700 1rem/1.4rem var(--ff);
-    --h1: 900 5rem/6.5rem var(--ff);
-    --h2: 700 2.5rem/3.5rem var(--ff);
+    --h1: 900 3.25rem/5.6rem var(--ff);
+    --h2: 700 1.8rem/2.5rem var(--ff);
     --h3: 700 1.5rem/2.1rem var(--ff);
-    --p: 400 1rem/1.6rem var(--ff);
-    --btn: 500 1.1rem/1.75rem var(--ff);
+    --p: 400 0.8rem/1.3rem var(--ff);
+    --p-s: 400 0.8rem/1.2rem var(--ff);
+    --btn: 500 1rem/1.5rem var(--ff);
     --input: 400 1.1rem/1.75rem var(--ff2);
 }
 
@@ -121,7 +129,6 @@ body {
 
 .m-logo {
     display: inline-block;
-    height: 5rem;
     aspect-ratio: 1/1;
     align-self: center;
 }
@@ -202,4 +209,30 @@ body {
     outline: none;
     border-color: var(--field-focus-border-colour);
     background-color: var(--bg-field-focus-colour);
+}
+
+@media (max-width: 1200px) {
+    .landing-header {
+        padding: 2rem var(--xl-padding);
+    }
+    .landing-footer {
+        padding: 2rem var(--xl-padding) 1rem;
+    }
+}
+
+@media (max-width: 992px) {
+
+}
+
+@media (max-width: 768px) {
+}
+
+@media (max-width: 480px) {
+    :root {
+        font-size: var(--m-font-size);
+    }
+}
+
+@media (max-width: 320px) {
+
 }

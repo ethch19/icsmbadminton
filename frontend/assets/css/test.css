@@ -1,0 +1,8 @@
+.about-page {
+    padding: 0 var(--side-padding);
+}
+
+.line-svg {
+    position: relative;
+    height: 100vh;
+}

@@ -16,7 +16,7 @@ const mobile = ref(false);
 const LogoutText = ref("");
 
 function widthResized() {
-    vw.value = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    vw.value = Math.max(document.documentElement.clientWidth);
     if (vw.value <= 480) {
         mobile.value = true;
         LogoutText.value = "";

@@ -1,8 +1,7 @@
 .content-box {
     justify-content: center;
     transform: translateY(-12%);
-    max-width: 32rem;
-    min-width: 28rem;
+    max-width: 30rem;
 }
 
 .content-box-header {
@@ -27,4 +26,29 @@
     border-radius: 1rem;
     padding: 3rem var(--margin-xl) var(--margin-xl);
     margin: 0;
+}
+
+@media (max-width: 1200px) {
+
+}
+
+@media (max-width: 992px) {
+
+}
+
+@media (max-width: 768px) {
+
+}
+
+@media (max-width: 480px) {
+    .content-box {
+        max-width: 80vw
+    }
+    .content-box-logo {
+        height: 5rem;
+    }
+}
+
+@media (max-width: 320px) {
+
 }

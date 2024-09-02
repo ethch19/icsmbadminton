@@ -26,4 +26,31 @@
 .left-collage, .right-collage {
     max-width: 15rem;
     max-height: 15rem;
+    aspect-ratio: unset;
+}
+
+@media (max-width: 1200px) {
+
+}
+
+@media (max-width: 992px) {
+
+}
+
+@media (max-width: 768px) {
+
+}
+
+@media (max-width: 480px) {
+    .collage-img {
+        max-width: 75vw;
+        max-height: unset;
+    }
+    .left-collage, .right-collage {
+        max-width: 30vw;
+    }
+}
+
+@media (max-width: 320px) {
+
 }

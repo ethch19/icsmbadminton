@@ -65,7 +65,7 @@ rawItems.forEach((x) => {
 </script>
 
 <template>
-    <main>
+    <main class="page-container flex-column">
         <h1 class="title text-center">Membership</h1>
         <div class="opt-container">
             <MemCard v-for="item in items" v-bind="item"/>

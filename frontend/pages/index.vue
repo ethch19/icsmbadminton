@@ -7,7 +7,7 @@ const info = data.value.body;
 
 function onIntersectionObserver([{ isIntersecting, target }]: IntersectionObserverEntry[]) {
     if (isIntersecting) {
-        target.classList.add("show-box");
+        target.classList.add("show-container");
     }
 }
 
@@ -19,17 +19,17 @@ function scroll(event) {
 <template>
     <main class="landing-container">
         <div class="jumbo">
-            <span class="title-container" >
+            <div class="title-container" >
                 <h1 class="title align-left">ICSM<br/> Badminton</h1>
                 <button @click="scroll" class="primary-button button">Find out more</button>
-            </span>
+            </div>
             <img class="jumbo-img" src="/img/badminton-players.svg" />
         </div>
         <div ref="mainContainer" class="flex-column main-container">
             <Suspense>
-                <section v-for="block in info" v-intersection-observer="onIntersectionObserver" class="content-box flex-row hidden-box" :class="{ 'box-reverse': block.reverse}">
+                <section v-for="block in info" v-intersection-observer="onIntersectionObserver" class="content-container flex-row hidden-container" :class="{ 'container-reverse': block.reverse}">
                     <Collage v-bind="block.photos"/>
-                    <ContentBlock v-bind="block.content" boxPadding="3rem var(--margin-xl) var(--margin-xl)"/>
+                    <ContentBlock :class="{ 'content-block-reverse': block.reverse, 'content-block': !block.reverse}" v-bind="block.content" subtitleHeight="1rem" boxPadding="3rem var(--margin-xl) var(--margin-xl)"/>
                 </section>
             </Suspense>
         </div>

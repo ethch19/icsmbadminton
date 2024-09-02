@@ -6,9 +6,8 @@ const props = defineProps<{
     subtitleHeight?: string,
     boxPadding?: string,
 }>()
-
 const imgBool = ref(true);
-if (typeof props.img == "undefined") {
+if (typeof props.logo == "undefined") {
     imgBool.value = false;
 }
 </script>

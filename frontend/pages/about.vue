@@ -2,6 +2,7 @@
 definePageMeta({
     layout: "default"
 });
+import { vInfiniteScroll } from '@vueuse/components';
 import anime from 'animejs/lib/anime.es.js';
 
 const { data }  = await useAsyncData('about', () => queryContent('/about').findOne());
@@ -12,157 +13,117 @@ const fadeAnimation = reactive({});
 const pathAnimation = reactive({});
 let ticking = false;
 
+const vw = ref(null);
+const mobile = ref(false);
+const tablet = ref(false);
+
+function widthResized() {
+    vw.value = Math.max(document.documentElement.clientWidth);
+    if (vw.value <= 768) {
+        mobile.value = true;
+        tablet.value = false;
+    } 
+    else if (vw.value <= 1200) {
+        mobile.value = false;
+        tablet.value = true;
+    }
+    else {
+        mobile.value = false;
+        tablet.value = false;
+    }
+}
+
+function presetFadeAnimation(name: string, target: string, start: number, total: number, remaining: number) {
+    fadeAnimation[name] = anime({
+        targets: target,
+        easing: "easeInSine",
+        keyframes: [
+            {translateY: [0,0], opacity: [0,0], duration: start},
+            {translateY: ["-1rem", 0], opacity: [0,1], duration: total},
+            {opacity: 1, duration: remaining}
+        ],
+        direction: "alternate",
+        autoplay: false,
+    });
+}
+
 onBeforeMount(() => {
     document.addEventListener("scroll", seekAnimations);
 });
 
 onMounted(() => {
-    pathAnimation.value = anime.path(".linetree");
-    lineAnimation.path = anime({
-        targets: ".linetree",
-        keyframes: [
-            {opacity: [0,0], duration: 6},
-            {opacity: [1,1], strokeDashoffset: [anime.setDashoffset, -0], duration: 94},
-        ],
-        easing: "easeInOutSine",
-        direction: "normal",
-        autoplay: false,
+    widthResized();
+    var doit;
+    window.onresize = () => {
+      clearTimeout(doit);
+      doit = setTimeout(widthResized, 100);
+    };
+    nextTick(() => {
+        pathAnimation.value = anime.path(".linetree");
+        let easing = "linear";
+        if (!(mobile.value || tablet.value)) {
+            easing = "easeInOutSine";
+            anime({
+                targets: ".content-box0",
+                easing: "easeInSine",
+                translateY: ["-1rem", 0],
+                opacity: [0,1],
+                duration: 1000,
+                direction: "normal",
+                autoplay: true,
+            });
+            presetFadeAnimation("content1", ".content-box1", 19, 10, 71);
+            presetFadeAnimation("content2", ".content-box2", 58, 11, 31);
+            presetFadeAnimation("img1", ".photo1", 4, 10, 84);
+            presetFadeAnimation("img2", ".photo2", 32, 8, 60);
+            presetFadeAnimation("img3", ".photo3", 49, 7, 44);
+            presetFadeAnimation("img4", ".photo4", 69, 3, 28);
+            presetFadeAnimation("silo1", ".silo1", 30, 3, 67);
+            presetFadeAnimation("silo2", ".silo2", 42, 6, 52);
+            presetFadeAnimation("silo3net", ".silo3, .net", 64, 6, 30);
+            fadeAnimation.end = anime({
+                targets: ".join-container",
+                easing: "easeInSine",
+                keyframes: [
+                    {translateY: ["-4.5rem", "-4.5rem"], translateX: ["24rem", "24rem"], opacity: [0,0], duration: 82},
+                    {translateY: ["-5.5rem", "-4.5rem"], opacity: [0,1], duration: 13},
+                    {opacity: 1, duration: 5}
+                ],
+                direction: "alternate",
+                autoplay: false,
+            });
+        }
+        lineAnimation.path = anime({
+            targets: ".linetree",
+            keyframes: [
+                {opacity: [0,0], duration: 2},
+                {opacity: [1,1], strokeDashoffset: [anime.setDashoffset, -0], duration: 98},
+            ],
+            easing: easing,
+            direction: "normal",
+            autoplay: false,
+        });
+        lineAnimation.arrow = anime({
+            targets: ".arrowhead",
+            keyframes: [
+                {opacity: [0,0], duration: 2},
+                {opacity: [1,1], translateY: pathAnimation.value("y"), translateX: pathAnimation.value("x"), rotate: pathAnimation.value("angle"), duration: 98},
+            ],
+            easing: easing,
+            direction: "normal",
+            autoplay: false,
+        });
+        seekAnimations();
     });
-    lineAnimation.arrow = anime({
-        targets: ".arrowhead", 
-        keyframes: [
-            {opacity: [0,0], duration: 6},
-            {opacity: [1,1], translateY: pathAnimation.value("y"), translateX: pathAnimation.value("x"), rotate: pathAnimation.value("angle"), duration: 94},
-        ],
-        easing: "easeInOutSine",
-        direction: "normal",
-        autoplay: false,
-    });
-    anime({
-        targets: ".content-box0",
-        easing: "easeInSine",
-        translateY: ["-1rem", 0],
-        opacity: [0,1],
-        duration: 1000,
-        direction: "normal",
-        autoplay: true,
-    });
-    fadeAnimation.content1 = anime({
-        targets: ".content-box1",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 25},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 4},
-            {opacity: 1, duration: 71}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    fadeAnimation.content2 = anime({
-        targets: ".content-box2",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 54},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 8},
-            {opacity: 1, duration: 38}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    fadeAnimation.img1 = anime({
-        targets: ".photo1",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 6},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 10},
-            {opacity: 1, duration: 84}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    fadeAnimation.img2 = anime({
-        targets: ".photo2",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 35},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 6},
-            {opacity: 1, duration: 59}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    fadeAnimation.img3 = anime({
-        targets: ".photo3",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 45},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 4},
-            {opacity: 1, duration: 51}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    fadeAnimation.img4 = anime({
-        targets: ".photo4",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 68},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 4},
-            {opacity: 1, duration: 28}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    fadeAnimation.silo1 = anime({
-        targets: ".silo1",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 5},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 18},
-            {opacity: 1, duration: 82}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    fadeAnimation.silo2 = anime({
-        targets: ".silo2",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 40},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 13},
-            {opacity: 1, duration: 47}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    fadeAnimation.silo3net = anime({
-        targets: ".silo3, .net",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 64},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 5},
-            {opacity: 1, duration: 29}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    fadeAnimation.end = anime({
-        targets: ".join-container",
-        easing: "easeInSine",
-        keyframes: [
-            {translateY: [0,0], opacity: [0,0], duration: 83},
-            {translateY: ["-1rem", 0], opacity: [0,1], duration: 12},
-            {opacity: 1, duration: 5}
-        ],
-        direction: "alternate",
-        autoplay: false,
-    });
-    seekAnimations();
     ready.value = true;
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener("scroll", seekAnimations);
+});
+
+onUnmounted(() => {
+    window.onresize = null;
 });
 
 function seekAnimations(event) {
@@ -190,26 +151,44 @@ function seekAnimations(event) {
 </script>
 
 <template>
-    <main class="flex-column">
+    <main class="about-page flex-column">
         <h1 class="title text-center">About</h1>
         <div v-show="ready" class="about-container flex-column">
             <div class="path-container">
-                <svg class="path-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 814.2 920.7" preserveAspectRatio="xMidYMid meet">
-                    <path class="linetree" d="m350.2,81.5s40,31.7,117.2,0c77.2-31.7,113.1-93.8,168.9-77.2,55.9,16.6,117.2,29.7,162.7,77.2,45.5,47.6-31.7,224.8-113.1,235.8-81.4,11-458.6,41.4-477.9,138.6-19.3,97.2-292.4,114-179.3,185.7,113.1,71.7,76.5,227.6,206.9,196.5,171.4-46.3,375.5-233.9,465.4-119.3s-91.3,83.9-34.3,201.8" style="fill: none; stroke: #707070; stroke-width: 3px;"/>
+                <svg v-if="!(mobile || tablet)" class="path-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 862.2 1650.9" preserveAspectRatio="xMidYMin slice">
+                    <path class="linetree" d="m405.2,1.4s86.5,34.9,214.8,6.2c188.2-42.2,243.5,307.3,92.5,339.5-152,32.4-220.1-58.5-311.4-64.4-76-4.9-132.3,1.2-197.9,67.9-69.9,71.1-92.4,117.9-110,159.2-39.6,93-87.8,210.7,21.1,217.8,144,9.4,272.8,10.5,294.2,151.6,14.8,97.6-185.6,141.1-289.5,173.9-211.9,66.7-99.9,315.9,44.7,295.1,39.3-5.7,107.1-55.2,178.1-108.4,89.8-67.3,185.8-145.7,329.8-98.2,61.9,20.4,58.7,134.1,0,193.7-46.9,47.5-5.3,93,29.3,149.9" style="fill: none; stroke: #707070; stroke-width: 3px;"/>
+                    <image class="arrowhead" :href="'/img/arrowhead.svg'"/>
+                </svg>
+                <svg v-if="tablet" class="line-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 206.9 1497.7" preserveAspectRatio="xMidYMin slice">
+                    <path class="linetree" d="m36.6,1.2c142.4,115.2,171.2,206.3,168.6,270.4-2.1,52.2-23.8,56.2-43.9,151-21.1,100-2.2,120.1-17.6,265.2-9,85.4-13.6,128.1-33.4,179.1-44.3,114.1-95.8,108.5-107.1,180.9-14.7,93.8,67.2,132.3,91.3,272.2,12.8,74.6,2.4,138.2-7,177.4" style="fill: none; stroke: #707070; stroke-width: 3px;"/>
+                    <image class="arrowhead" :href="'/img/arrowhead.svg'"/>
+                </svg>
+                <svg v-if="mobile" class="line-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 1483.7" preserveAspectRatio="xMidYMin slice">
+                    <path class="linetree" d="M2.5 0, L2.5 156.8, 2.5 340.6, 2.5 497.4, 2.5 650.8, 2.5 783.1, 2.5 936.5, 2.5 1120.3, 2.5 1295.9, 2.5 1483.7" style="fill: none; stroke: #707070; stroke-width: 3px;"/>
                     <image class="arrowhead" :href="'/img/arrowhead.svg'"/>
                 </svg>
             </div>
             <div class="block-container">
                 <ContentBlock v-for="(item, index) in items" :class="'content-box'+index" :subtitleHeight="'1.2rem'" :boxPadding="'1.5rem'" v-bind="item"/>
                 <img v-for="n in 4" class="photo" :class="'photo'+n" :src="'/img/gallery/about-'+n+'.jpg'"/>
-                <img v-for="n in 3" class="silhouette" :class="'silo'+n" :src="'/img/silhouette'+n+'.svg'"/>
-                <img class="net" src="/img/badminton-net.svg"/>
-            </div>
-            <div class="end-container flex-row">
-                <div class="join-container flex-column">
-                    <h2 class="subhead join-h2">Start your journey with us my drilla</h2>
-                    <a class="linkbutton button primary-button" href="https://www.imperialcollegeunion.org/activities/a-to-z/badminton-icsm" target="_blank">Find out more</a>
+                <img v-for="n in 2" class="silhouette" :class="'silo'+n" :src="'/img/silhouette'+n+'.svg'"/>
+                <div class="flex-row silonet-container">
+                    <img class="silo3" src="/img/silhouette3.svg"/>
+                    <img class="net" src="/img/badminton-net.svg"/>
                 </div>
+            </div>
+            <!-- <div v-else class="block-container flex-column">
+                <ContentBlock class="content-box1 contentbox" :subtitleHeight="'1.2rem'" :boxPadding="'1.5rem'" v-bind="items[0]"/>
+                <img class="photo1 photo" src="/img/gallery/about-1.jpg"/>
+                <img class="silo1 silhouette" src="/img/silhouette1.svg"/>
+                <div class="flex-row silonet-container">
+                    <img class="silo3" src="/img/silhouette3.svg"/>
+                    <img class="net" src="/img/badminton-net.svg"/>
+                </div>
+            </div> -->
+            <div class="join-container flex-column">
+                <h2 class="subhead join-h2">Start your journey with us my drilla</h2>
+                <a class="linkbutton button primary-button" href="https://www.imperialcollegeunion.org/activities/a-to-z/badminton-icsm" target="_blank">Find out more</a>
             </div>
         </div>
     </main>

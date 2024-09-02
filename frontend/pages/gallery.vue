@@ -18,7 +18,4 @@ definePageMeta({
     color: var(--grey-txt-colour);
     margin: 20vh 0;
 }
-main {
-    height: 80vh;
-}
 </style>

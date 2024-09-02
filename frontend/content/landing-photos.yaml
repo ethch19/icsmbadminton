@@ -2,7 +2,7 @@
   content:
     title: Social Events
     logo: /img/underground.svg
-    text: we are very social, like very social. events every day, never misses a day, always at sports night every wednesday
+    text: we are very social, like very social. events every day, never miss a day, always at sports night every wednesday
   photos:
     mainLink: /img/gallery/social-main.jpg
     leftLink: /img/gallery/social-left.jpg
@@ -15,42 +15,42 @@
 -
   content:
     title: Competitions
-    logo: 
-    text: we good at badminton, only W's in the chat, no L's taken
+    logo: /img/trophy.svg
+    text: we good at badminton, only W's in the chat, no L's taken. if youre good as well, pull up to our trials
   photos:
     mainLink: /img/gallery/comp-1.jpg
     leftLink: /img/gallery/comp-2.jpg
-    leftTop: -10%
+    leftTop: -15%
     leftLeft: -10%
     rightLink: /img/gallery/comp-3.jpg
-    rightTop: 85%
-    rightLeft: 70%
+    rightTop: 70%
+    rightLeft: 65%
   reverse: true
 -
   content:
     title: Tours Abroad
-    logo:
+    logo: /img/tour.svg
     text: absolutely no badminton is ever played, whatever happens on tour stays on tour
   photos:
     mainLink: /img/gallery/tour-1.jpg
     leftLink: /img/gallery/tour-2.jpg
-    leftTop: -5%
+    leftTop: -10%
     leftLeft: -10%
     rightLink: /img/gallery/tour-3.jpg
-    rightTop: 90%
+    rightTop: 65%
     rightLeft: 60%
   reverse: false
 -
   content:
     title: Sports Night
-    logo:
-    text: we hang every wednesday. no such thing as hangover if you drink often like us
+    logo: /img/reynolds.svg
+    text: we hang every wednesday. no such thing as hangover if you drink as often as us
   photos:
     mainLink: /img/gallery/sport-2.jpg
     leftLink: /img/gallery/sport-1.jpg
-    leftTop: -5%
+    leftTop: -25%
     leftLeft: -10%
     rightLink: /img/gallery/sport-3.jpg
-    rightTop: -10%
-    rightLeft: 70%
+    rightTop: -15%
+    rightLeft: 65%
   reverse: true
