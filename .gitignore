@@ -1,5 +1,10 @@
 **/target
 
+#Vim swap files
+*.swp
+*.swo
+*~
+
 # Nuxt dev/build outputs
 .output
 .data

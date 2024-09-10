@@ -1,15 +1,21 @@
-use axum::{Router, routing::get};
 use sqlx::postgres::PgPoolOptions;
+use backend::database;
 
 #[tokio::main]
-async fn main() -> Result<(), sqlx::Error> {
-    let app = Router::new()
-        .route("/", get(|| async { "Hello, World!" }));
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let database_url = dotenvy::var("DATABASE_URL")?;
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    let pool = PgPoolOptions::new().max_connections(5).connect(&database_url).await?;
+    
+    let admins = sqlx::query_as!(database::Admin,
+        r#"
+        SELECT * FROM auth.admins;
+        "#
+    )
+        .fetch_all(&pool)
+        .await?;
 
-    let pool = PgPoolOptions::new().max_connections(5).connect("postgres://postgres:'j92kloa00s@1s'@localhost:5432/icsmbdmt").await?;
+    println!("{:?}", admins);
 
-    let 
+    Ok(())
 }

@@ -138,9 +138,11 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "chrono",
+ "dotenvy",
  "sqlx",
  "tokio",
  "tower",
+ "uuid",
 ]
 
 [[package]]
