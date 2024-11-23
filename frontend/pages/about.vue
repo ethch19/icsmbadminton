@@ -51,6 +51,7 @@ onBeforeMount(() => {
     document.addEventListener("scroll", seekAnimations);
 });
 
+//LINE ANIMATION NEEDS TO PROVIDE HAPTIC FEEDBACK, LIKE A LAG BETWEEN INPUTS
 onMounted(() => {
     widthResized();
     var doit;

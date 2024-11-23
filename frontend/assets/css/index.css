@@ -1,40 +1,50 @@
 .landing-container {
     display: flex;
     flex-direction: column;
-    gap: 6rem;
 }
 
-.jumbo {
+.hero {
+    display: flex;
+    margin: 5% auto;
+    max-width: 1400px;
+    width: 90%;
+}
+
+.hero-container {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    width: 100%;
     justify-content: space-between;
-    gap: 5rem;
-    padding: 0 var(--side-padding);
+    padding: 0 15px;
+    margin: 0 auto;
 }
 
-.jumbo-img {
+.hero-img {
     width: 25rem;
 }
 
 .title-container::after {
-    position: absolute;
+    position: relative;
     content: url("/img/badminton-racket.svg");
     display: block;
     width: 30rem;
-    top: 45%;
-    left: 10%;
+    top: 5rem;
+    right: 30%;
 }
 
-.main-container {
-    gap: 30vh;
-    margin: 10vh 0;
+.accent {
+    color: var(--accent-colour);
 }
 
+.content {
+    margin: 5rem auto;
+}
 .content-container {
     justify-content: center;
     flex-wrap: wrap;
     column-gap: 10vw;
+    margin: 8rem 0;
 }
 
 .hidden-container {

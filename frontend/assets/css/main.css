@@ -38,6 +38,7 @@
     --dash-txt-colour: #434742;
 
     /* colours */
+    --accent-colour: #344E41;
     --bg-10-colour: #F0F8EF;
     --bg-20-colour: #FAFCF9;
     --bg-box-colour: #FAF7ED;
@@ -46,14 +47,14 @@
     --bg-field-colour: #F8FAF7;
     --bg-field-focus-colour: #EFF3EE;
     --drop-shadow-colour: hsl(100 35% 30% / 0.3);
-    --txt-colour: #464B3D;
+    --txt-colour: #3e4236;
     --txt-field-colour: #3E423F;
     --txt-join-colour: #A3B9A0;
-    --title-colour: #474244;
-    --subtitle-colour: #545851;
+    --title-colour: #212921;
+    --subtitle-colour: #212921;
     --subtitle-form-colour: #687A63;
-    --btn-10-colour: #83AE8D;
-    --btn-11-colour: #739A7C;
+    --btn-10-colour: #3A5A40;
+    --btn-11-colour: #344E41;
     --btn-20-colour: #C3D1C7;
     --btn-21-colour: #B0BDB4;
     --btn-30-colour: #CFDCD0;
@@ -79,12 +80,12 @@
     --ff: "Open Sans", sans-serif;
     --ff2: "Dubai", sans-serif;
     --a: 700 1rem/1.4rem var(--ff);
-    --h1: 900 3.25rem/5.6rem var(--ff);
-    --h2: 700 1.8rem/2.5rem var(--ff);
-    --h3: 700 1.5rem/2.1rem var(--ff);
-    --p: 400 0.8rem/1.3rem var(--ff);
+    --h1: 900 3.75rem/5.25rem var(--ff);
+    --h2: 700 2.75rem/3.5rem var(--ff);
+    --h3: 700 2rem/2.5rem var(--ff);
+    --p: 400 1rem/1.6rem var(--ff);
     --p-s: 400 0.8rem/1.2rem var(--ff);
-    --btn: 500 1rem/1.5rem var(--ff);
+    --btn: 500 1rem/1.6rem var(--ff);
     --input: 400 1.1rem/1.75rem var(--ff2);
 }
 
@@ -145,19 +146,19 @@ body {
     padding: 0;
 }
 
-.title {
-    color: var(--title-colour);
-    font: var(--h1);
-    margin: var(--margin-m) 0;
-    text-transform: uppercase;
-}
-
 .text-center {
     text-align: center;
 }
 
 .text-left {
     text-align: left;
+}
+
+.title {
+    color: var(--title-colour);
+    font: var(--h1);
+    margin: var(--margin-m) 0;
+    text-transform: uppercase;
 }
 
 .subtitle {

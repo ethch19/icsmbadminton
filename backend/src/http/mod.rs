@@ -1,20 +1,21 @@
 use axum::{Extension, Router};
 
-mod admin;
+mod users;
+mod token;
 
-pub use self::admin::Admin;
-use crate::error::Error;
+pub use self::users::{User, get_members};
+pub use self::token::{Claims, AuthError};
+use crate::Result;
 
 pub fn app(db: sqlx::PgPool) -> Router {
     Router::new()
-        .merge(admin::router())
+        .merge(users::router())
+        .merge(token::router())
         .layer(Extension(db))
     }
 
-pub async fn serve(db: sqlx::PgPool) -> Result<(), Error> {
-    axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
-        .serve(app(db).into_make_service())
-        .await
-        .map_err(Error::AxumServer);
-    }
+pub async fn serve(db: sqlx::PgPool) -> Result<()> {
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
+    axum::serve(listener, app(db)).await;
+    Ok(())
 }

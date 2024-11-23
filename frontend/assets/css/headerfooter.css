@@ -5,40 +5,37 @@
     min-height: 100vh;
 }
 
-.landing-bg {
-    background-image: url("~/public/img/sec-bg.svg");
-    background-repeat: no-repeat;
-    background-size: contain;
-}
-
-.header-bg {
-    background-color: var(--bg-20-colour);
-}
-
 .landing-header {
-    display: inline-flex;
-    flex-direction: row;
+    display: flex;
     height: 8vh;
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 1400px;
+}
+
+.header-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
     align-items: center;
     justify-content: space-between;
-    padding: 2rem var(--side-padding);
-    background-color: var(--bg-20-colour);
 }
 
-.landing-header-container {
+.link-container {
     display: inline-flex;
     gap: 3rem;
     font: var(--a);
 }
 
-.landing-header-container a {
+.link-container a {
     display: inline-block;
     text-decoration: none;
     text-transform: uppercase;
     color: var(--header-footer-bold-colour);
 }
 
-.landing-header-container a:hover {
+.link-container a:hover {
     text-decoration: underline 3px;
 }
 

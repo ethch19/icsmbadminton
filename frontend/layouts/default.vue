@@ -4,12 +4,6 @@
 
 <script setup lang="ts">
 const route = useRoute();
-const landingBg = computed(() => {
-    return route.path == "/" ? "landing-bg" : "";
-});
-const headerBg = computed(() => {
-    return route.path == "/" ? "" : "header-bg";
-});
 
 const menuToggle = ref(false);
 
@@ -46,18 +40,20 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="landing-page" :class="landingBg">
-        <header class="landing-header" :class="headerBg">
-            <img class="m-logo" src="/img/icsm-badminton-logo.png" alt="ICSM Badminton Logo">
-            <span v-if="!mobile" class="landing-header-container">
-                <NuxtLink to="/">Home</NuxtLink>
-                <NuxtLink to="/about">About</NuxtLink>
-                <NuxtLink to="/membership">Membership</NuxtLink>
-                <NuxtLink to="/gallery">Gallery</NuxtLink>
-            </span>
-            <button v-else class="menu-btn button" @click="menuPressed">
-                <img class="menu-svg" src="/img/menu.svg"/>
-            </button>
+    <div class="landing-page">
+        <header class="landing-header">
+            <div class="header-container">
+                <img class="m-logo" src="/img/icsm-badminton-logo.png" alt="ICSM Badminton Logo">
+                <span v-if="!mobile" class="link-container">
+                    <NuxtLink to="/">Home</NuxtLink>
+                    <NuxtLink to="/about">About</NuxtLink>
+                    <NuxtLink to="/membership">Membership</NuxtLink>
+                    <NuxtLink to="/gallery">Gallery</NuxtLink>
+                </span>
+                <button v-else class="menu-btn button" @click="menuPressed">
+                    <img class="menu-svg" src="/img/menu.svg"/>
+                </button>
+            </div>
         </header>
         <Transition name="menu">
             <div  v-if="menuToggle" class="mobile-menu flex-column">
