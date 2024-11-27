@@ -20,6 +20,7 @@ use once_cell::sync::Lazy;
 pub struct Claims {
     pub sub: String,
     pub exp: usize,
+    pub admin: bool
 }
 
 #[derive(Debug, Serialize)]
@@ -56,18 +57,18 @@ const KEYS: Lazy<Keys> = Lazy::new(|| {
 pub fn router() -> Router {
     Router::new()
         .route("/v1/login", post(authorize))
-        .route("/v1/protected", get(protected))
 }
 
-fn generate_jwt(username: &str) -> Result<String, AuthError> {
+fn generate_jwt(shortcode: &str, admin: bool) -> Result<String, AuthError> {
     let expiration = Utc::now()
         .checked_add_signed(Duration::days(1))
         .expect("valid timestamp")
         .timestamp();
 
     let claims = Claims {
-        sub: username.to_owned(),
+        sub: shortcode.to_owned(),
         exp: expiration as usize,
+        admin: admin,
     };
 
     encode(&Header::default(), &claims, &KEYS.encoding).map_err(|_| AuthError::TokenCreation)
@@ -75,10 +76,6 @@ fn generate_jwt(username: &str) -> Result<String, AuthError> {
 
 fn verify_jwt(token: &str) -> bool {
     decode::<Claims>(token, &KEYS.decoding, &Validation::default()).is_ok()
-}
-
-async fn protected(claims: Claims) -> Result<String, AuthError> {
-    Ok(String::from("Welcome to the protected area"))
 }
 
 async fn authorize(pool: Extension<sqlx::PgPool>, Json(payload): Json<AuthPayload>) -> Result<impl IntoResponse, AuthError> {
@@ -102,7 +99,7 @@ async fn authorize(pool: Extension<sqlx::PgPool>, Json(payload): Json<AuthPayloa
     if Argon2::default().verify_password(payload.password.as_bytes(), &parsed_hash).is_ok() {
         if payload.token {
             // Create the authorization token
-            let token = generate_jwt(&payload.shortcode)?;
+            let token = generate_jwt(&payload.shortcode, selected_user.admin)?;
             // Send the authorized token
             return Ok((StatusCode::OK, Json(AuthBody::new(token))).into_response());
         }
