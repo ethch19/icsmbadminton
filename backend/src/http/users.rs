@@ -1,7 +1,6 @@
 use regex::Regex;
 use uuid::Uuid;
 use validator::Validate;
-use std::time::Duration;
 use once_cell::sync::Lazy;
 use argon2::{
 	password_hash::{
@@ -19,10 +18,10 @@ use axum::{
 	routing::{get, post},
 	extract::{Json, Query},
 };
-use rand::Rng;
 use reqwest::header;
 
 use crate::{Result, Error};
+use crate::http::Claims;
 
 static USERNAME_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"^[0-9A-Za-z_]+$").unwrap());
 static PASSWORD_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"^.(.*[A-Za-z0-9])(.*\d).+$").unwrap());
@@ -87,7 +86,7 @@ fn default_time() -> chrono::DateTime<chrono::Utc> {
 pub fn router() -> Router {
 	Router::new().route("/v1/register", post(PendingUser::new))
 	.route("/v1/verify", post(PendingUser::verify))
-	.route("/v1/auth", post(User::verify))
+    .route("/v1/testlogin", get(test_login))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -110,6 +109,10 @@ struct TeamMember {
 	CID: String,
 	email: String,
 	login: String
+}
+
+async fn test_login(claims: Claims) ->  Result<String> {
+    Ok(String::from("Success Access via Token"))
 }
 
 async fn get_team_id(products: Value) -> Result<i64> {
@@ -316,35 +319,5 @@ impl PendingUser {
 			return Ok(StatusCode::CREATED)
 		}
 		Err(Error::UnprocessableEntity("Invalid Token".into()))
-	}
-}
-
-impl User {
-	pub async fn verify(pool: Extension<sqlx::PgPool>, Json(req): Json<UserAuth>) -> Result<String> {
-		req.validate()?;
-		let parsed_hash = PasswordHash::new(&req.password)?;
-
-		let parsed_user = sqlx::query!(
-			r#"
-			SELECT shortcode FROM auth.users WHERE shortcode = $1
-			"#,
-			req.shortcode
-		)
-		.fetch_optional(&*pool)
-		.await?;
-
-		if let Some(_) = parsed_user {
-			let result = Argon2::default().verify_password(&req.password.as_bytes(), &parsed_hash);
-
-			if let Err(_) = result {
-				return Ok("Successful Verification".to_string())
-			}
-		}
-
-		//Prevent validation leak from runtime checks
-		let rand_sleep = rand::thread_rng().gen_range(Duration::from_millis(100)..=Duration::from_millis(500));
-		tokio::time::sleep(rand_sleep).await;
-
-		Err(Error::UnprocessableEntity("Invalid Login Details".into()))
 	}
 }
