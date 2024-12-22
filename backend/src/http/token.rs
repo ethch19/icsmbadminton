@@ -13,7 +13,7 @@ use axum::{
 };
 use axum_extra::{
 	headers::{authorization::Bearer, Authorization},
-	TypedHeader,
+    typed_header::{TypedHeader, TypedHeaderRejection},
 };
 use rand::Rng;
 use once_cell::sync::Lazy;
@@ -133,7 +133,6 @@ pub fn router() -> Router {
 	Router::new()
 		.route("/v1/login", post(authorize))
 		.route("/v1/refresh", get(get_access_token))
-		.route_layer(from_fn(mid_jwt_auth))
 }
 
 fn generate_jwt(shortcode: &str, roles: &Vec<String>, expiration: i64, keys: &Lazy<Keys>) -> Result<String, AuthError> {
@@ -198,7 +197,7 @@ async fn authorize(pool: Extension<sqlx::PgPool>, Json(payload): Json<AuthPayloa
 	Err(AuthError::WrongCredentials)
 }
 
-async fn mid_jwt_auth(header: Result<TypedHeader<Authorization<Bearer>>, axum_extra::typed_header::TypedHeaderRejection>, req: Request, next: Next) -> Result<Response, AuthError> {
+pub async fn mid_jwt_auth(header: Result<TypedHeader<Authorization<Bearer>>, TypedHeaderRejection>, req: Request, next: Next) -> Result<Response, AuthError> {
 	match header {
 		Ok(TypedHeader(Authorization(bearer))) => {
 			if req.uri() == "/v1/refresh" {
@@ -213,8 +212,7 @@ async fn mid_jwt_auth(header: Result<TypedHeader<Authorization<Bearer>>, axum_ex
 			Ok(response)
 		}
 		Err(_) => {
-			let response = next.run(req).await;
-			Ok(response)
+            Err(AuthError::InvalidToken)
 		}
 	}
 }

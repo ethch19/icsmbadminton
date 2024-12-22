@@ -22,6 +22,7 @@ use reqwest::header;
 
 use crate::{Result, Error};
 use crate::http::Claims;
+use crate::http::defaults::{default_time, default_uuid};
 
 static USERNAME_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"^[0-9A-Za-z_]+$").unwrap());
 static PASSWORD_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"^.(.*[A-Za-z0-9])(.*\d).+$").unwrap());
@@ -73,14 +74,6 @@ pub struct UserAuth {
 #[derive(Deserialize)]
 pub struct VerificationToken {
 	pub token: uuid::Uuid
-}
-
-fn default_uuid() -> uuid::Uuid {
-	Uuid::now_v7()
-}
-
-fn default_time() -> chrono::DateTime<chrono::Utc> {
-	chrono::Utc::now()
 }
 
 pub fn router() -> Router {
