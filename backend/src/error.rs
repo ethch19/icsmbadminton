@@ -1,10 +1,12 @@
-use derive_more::From;
-use axum:: {
-    response::{IntoResponse, Response},
-    http::StatusCode,
-};
-use sqlx::migrate::MigrateError;
 use crate::http::AuthError;
+use axum::{
+    extract::Json,
+    http::StatusCode,
+    response::{IntoResponse, Response},
+};
+use derive_more::From;
+use sqlx::migrate::MigrateError;
+use tracing::{event, Level};
 
 pub type Result<T> = core::result::Result<T, Error>;
 
@@ -14,6 +16,7 @@ pub enum Error {
 
     UnprocessableEntity(String),
 
+    #[from]
     Auth(AuthError),
 
     NotFoundTeamMembership(String),
@@ -57,14 +60,23 @@ impl std::error::Error for Error {}
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
-        let body = match self {
-            Error::Validator(_) => "Validation error",
-            _ => "Exception error",
+        use Error::*;
+
+        let body = match &self {
+            Conflict(v) | UnprocessableEntity(v) | NotFoundTeamMembership(v) | AddingTeam(v) => {
+                format!("{:?}", v)
+            }
+            Auth(e) => format!("{:?}", e),
+            Sqlx(e) => format!("{:?}", e),
+            Validator(e) => format!("{:?}", e),
+            PasswordHash(e) => format!("{:?}", e),
+            Reqwest(e) => format!("{:?}", e),
+            InvalidHeader(e) => format!("{:?}", e),
+            DotEnv(e) => format!("{:?}", e),
+            _ => String::from("Unknown error thrown"),
         };
-
-        println!("API error: {self:?}"); // Log it by serialising to json file
-
-        (self.status_code(), body).into_response()
+        event!(Level::ERROR, body);
+        (self.status_code(), Json(body)).into_response()
     }
 }
 
@@ -73,10 +85,13 @@ impl Error {
         use Error::*;
 
         match self {
-            Sqlx(_) | Migrate(_) | PasswordHash(_) | DotEnv(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Sqlx(_) | PasswordHash(_) | DotEnv(_) => StatusCode::INTERNAL_SERVER_ERROR,
             Validator(_) | UnprocessableEntity(_) => StatusCode::UNPROCESSABLE_ENTITY,
-            Auth(_) => StatusCode::FORBIDDEN,
             Conflict(_) => StatusCode::CONFLICT,
+            Auth(AuthError::WrongCredentials) => StatusCode::UNAUTHORIZED,
+            Auth(AuthError::MissingCredentials | AuthError::InvalidToken) | InvalidHeader(_) => {
+                StatusCode::BAD_REQUEST
+            }
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }

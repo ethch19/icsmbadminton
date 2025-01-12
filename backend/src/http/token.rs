@@ -1,218 +1,320 @@
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
-use serde::{Serialize, Deserialize};
-use serde_json::json;
-use jsonwebtoken::{encode, decode, Header, Validation, EncodingKey, DecodingKey};
-use chrono::{Utc, Duration};
 use axum::{
-	extract::{Request, FromRequestParts},
-	http::{request::Parts, StatusCode},
-	response::{Response, IntoResponse},
-	routing::{post, get},
-	middleware::{from_fn, Next},
-	Json, RequestPartsExt, async_trait, Extension, Router,
+    extract::{Request, State},
+    http::{HeaderMap, StatusCode},
+    middleware::Next,
+    response::{IntoResponse, Response},
+    routing::{get, post},
+    Json, Router,
 };
 use axum_extra::{
-	headers::{authorization::Bearer, Authorization},
+    headers::{authorization::Bearer, Authorization},
     typed_header::{TypedHeader, TypedHeaderRejection},
 };
-use rand::Rng;
+use chrono::{Duration, Utc};
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use once_cell::sync::Lazy;
+use rand::Rng;
+use serde::{Deserialize, Serialize};
+use tracing::{error, instrument};
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Claims {
-	pub sub: String, // subject of token
-	pub exp: usize, // expiration
-	pub roles: Vec<String>, // roles
+use crate::{Error, Result};
+
+pub fn router() -> Router<sqlx::PgPool> {
+    Router::new()
+        .route("/login", post(authenticate))
+        .route("/refresh", get(refresh_token))
 }
 
-#[async_trait]
-impl<S> FromRequestParts<S> for Claims
-where
-	S: Send + Sync,
-{
-	type Rejection = AuthError;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AccessClaims {
+    pub sub: String, // subject (userid)
+    pub exp: usize,  // expiration
+    pub user_id: uuid::Uuid,
+    pub name: String, // full name
+    pub tier: i16,    // 0 = user, 1 = member, 2 = team
+    pub admin: bool,
+}
 
-	async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-		let TypedHeader(Authorization(bearer)) = parts
-			.extract::<TypedHeader<Authorization<Bearer>>>()
-			.await
-			.map_err(|_| AuthError::InvalidToken)?;
-		let token_data = decode::<Claims>(bearer.token(), &ACCESS_KEYS.decoding, &Validation::default())
-			.map_err(|_| AuthError::InvalidToken)?;
-		Ok(token_data.claims)
-	}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RefreshClaims {
+    pub sub: String,
+    pub exp: usize,
+    pub jti: uuid::Uuid,
+    pub user_id: uuid::Uuid,
 }
 
 #[derive(Debug, Serialize)]
 struct AuthBody {
-	token: String,
-	token_type: String,
+    access_token: String,
+    refresh_token: Option<String>,
+    token_type: String,
 }
 
 impl AuthBody {
-	fn new(token: String) -> Self {
-		Self {
-			token,
-			token_type: "Bearer ".to_string(),
-		}
-	}
-}
-
-#[derive(Debug, Serialize)]
-struct LongAuthBody {
-	access_token: String,
-	refresh_token: String,
-	token_type: String,
-}
-
-impl LongAuthBody {
-	fn new(access_token: String, refresh_token: String) -> Self {
-		Self {
-			access_token,
-			refresh_token,
-			token_type: "Bearer ".to_string(),
-		}
-	}
+    fn new(access_token: String, refresh_token: Option<String>) -> Self {
+        Self {
+            access_token,
+            refresh_token,
+            token_type: "Bearer ".to_string(),
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]
 struct AuthPayload {
-	shortcode: String,
-	password: String,
-	keep_login: bool
+    shortcode: String,
+    password: String,
+    keep_login: bool,
 }
 
 #[derive(Debug)]
 pub enum AuthError {
-	WrongCredentials,
-	MissingCredentials,
-	TokenCreation,
-	InvalidToken,
-}
-
-impl IntoResponse for AuthError {
-	fn into_response(self) -> Response {
-		let (status, error_message) = match self {
-			AuthError::WrongCredentials => (StatusCode::UNAUTHORIZED, "Wrong credentials"),
-			AuthError::MissingCredentials => (StatusCode::BAD_REQUEST, "Missing credentials"),
-			AuthError::TokenCreation => (StatusCode::INTERNAL_SERVER_ERROR, "Token creation error"),
-			AuthError::InvalidToken => (StatusCode::BAD_REQUEST, "Invalid token"),
-		};
-		let body = Json(json!({
-			"error": error_message,
-		}));
-		(status, body).into_response()
-	}
+    WrongCredentials,
+    MissingCredentials,
+    TokenCreation,
+    InvalidToken,
 }
 
 struct Keys {
-	encoding: EncodingKey,
-	decoding: DecodingKey,
+    encoding: EncodingKey,
+    decoding: DecodingKey,
 }
 
 impl Keys {
-	fn new(secret: &[u8]) -> Self {
-		Self {
-			encoding: EncodingKey::from_secret(secret),
-			decoding: DecodingKey::from_secret(secret),
-		}
-	}
+    fn new(secret: &[u8]) -> Self {
+        Self {
+            encoding: EncodingKey::from_secret(secret),
+            decoding: DecodingKey::from_secret(secret),
+        }
+    }
 }
 
 const ACCESS_KEYS: Lazy<Keys> = Lazy::new(|| {
-	let secret = dotenvy::var("ACCESS_JWT_SECRET").expect("JWT_SECRET must be set");
-	Keys::new(secret.as_bytes())
+    let secret = dotenvy::var("ACCESS_JWT_SECRET").expect("JWT_SECRET must be set");
+    Keys::new(secret.as_bytes())
 });
 
 const REFRESH_KEYS: Lazy<Keys> = Lazy::new(|| {
-	let secret = dotenvy::var("REFRESH_JWT_SECRET").expect("JWT_SECRET must be set");
-	Keys::new(secret.as_bytes())
+    let secret = dotenvy::var("REFRESH_JWT_SECRET").expect("JWT_SECRET must be set");
+    Keys::new(secret.as_bytes())
 });
 
-pub fn router() -> Router {
-	Router::new()
-		.route("/v1/login", post(authorize))
-		.route("/v1/refresh", get(get_access_token))
-}
+#[instrument(name = "auth_via_login", level = "TRACE")]
+async fn authenticate(
+    State(pool): State<sqlx::PgPool>,
+    Json(payload): Json<AuthPayload>,
+) -> Result<impl IntoResponse> {
+    if payload.shortcode.is_empty() || payload.password.is_empty() {
+        error!(
+        return Err(Error::from(AuthError::MissingCredentials));
+    }
 
-fn generate_jwt(shortcode: &str, roles: &Vec<String>, expiration: i64, keys: &Lazy<Keys>) -> Result<String, AuthError> {
-	let expiration = Utc::now()
-		.checked_add_signed(Duration::days(expiration))
-		.expect("valid timestamp")
-		.timestamp();
-
-	let claims = Claims {
-		sub: shortcode.to_owned(),
-		exp: expiration as usize,
-		roles: roles.clone()
-	};
-
-	encode(&Header::default(), &claims, &keys.encoding).map_err(|_| AuthError::TokenCreation)
-}
-
-
-async fn get_access_token(TypedHeader(Authorization(bearer)): TypedHeader<Authorization<Bearer>>) -> Result<Json<AuthBody>, AuthError> {
-	let token_data = decode::<Claims>(bearer.token(), &REFRESH_KEYS.decoding, &Validation::default()).map_err(|_| AuthError::InvalidToken)?;
-	let claims = token_data.claims;
-	let access_token = generate_jwt(&claims.sub, &claims.roles, 1, &ACCESS_KEYS)?;
-	Ok(Json(AuthBody::new(access_token)))
-}
-
-async fn authorize(pool: Extension<sqlx::PgPool>, Json(payload): Json<AuthPayload>) -> Result<impl IntoResponse, AuthError> {
-	if payload.shortcode.is_empty() || payload.password.is_empty() {
-		return Err(AuthError::MissingCredentials);
-	}
-
-	let selected_user = sqlx::query_as!(
-		crate::http::User,
-		r#"
+    let selected_user = sqlx::query_as!(
+        crate::http::User,
+        r#"
 		SELECT * FROM auth.users WHERE shortcode = $1
 		"#,
-		&payload.shortcode,
-	)
-	.fetch_one(&*pool)
-	.await
-	.map_err(|_| AuthError::WrongCredentials)?;
+        &payload.shortcode,
+    )
+    .fetch_one(&pool)
+    .await
+    .map_err(|_| AuthError::WrongCredentials)?;
 
-	let parsed_hash = PasswordHash::new(&selected_user.password).map_err(|_| AuthError::WrongCredentials)?;
-	if Argon2::default().verify_password(payload.password.as_bytes(), &parsed_hash).is_ok() {
-		let mut roles: Vec<String> = Vec::new();
-		if selected_user.admin {
-			roles.push(selected_user.admin.to_string());
-		}
-		match selected_user.tier {
-			1 => roles.push(String::from("Member")),
-			2 => roles.push(String::from("Team")),
-			_ => (),
-		}
-		let access_token = generate_jwt(&payload.shortcode, &roles, 1, &ACCESS_KEYS)?;
-		if payload.keep_login {
-			let refresh_token = generate_jwt(&payload.shortcode, &roles, 30, &REFRESH_KEYS)?;
-			return Ok((StatusCode::OK, Json(LongAuthBody::new(access_token, refresh_token))).into_response());
-		}
-		return Ok((StatusCode::OK, Json(AuthBody::new(access_token))).into_response());
-	}
-	let rand_sleep = rand::thread_rng().gen_range(std::time::Duration::from_millis(100)..=std::time::Duration::from_millis(500));
-	tokio::time::sleep(rand_sleep).await;
-	Err(AuthError::WrongCredentials)
+    let parsed_hash =
+        PasswordHash::new(&selected_user.password).map_err(|_| AuthError::WrongCredentials)?;
+
+    if Argon2::default()
+        .verify_password(payload.password.as_bytes(), &parsed_hash)
+        .is_ok()
+    {
+        let expiration = Utc::now()
+            .checked_add_signed(Duration::hours(1))
+            .expect("valid timestamp")
+            .timestamp();
+
+        let claims = AccessClaims {
+            sub: selected_user.shortcode.clone(),
+            exp: expiration as usize,
+            user_id: selected_user.id,
+            name: selected_user.first_name + &selected_user.surname,
+            tier: selected_user.tier,
+            admin: selected_user.admin,
+        };
+
+        let access_token = encode(&Header::default(), &claims, &ACCESS_KEYS.encoding)
+            .map_err(|_| AuthError::TokenCreation)?;
+
+        if payload.keep_login {
+            let expiration = Utc::now()
+                .checked_add_signed(Duration::weeks(12))
+                .expect("valid timestamp")
+                .timestamp();
+
+            let jti = crate::http::defaults::default_uuid();
+            let _ = sqlx::query!(
+                "UPDATE auth.users SET jti = $1 WHERE id = $2",
+                jti,
+                selected_user.id
+            )
+            .execute(&pool)
+            .await
+            .map_err(|_| AuthError::TokenCreation)?;
+
+            let refresh_claims = RefreshClaims {
+                sub: selected_user.shortcode,
+                exp: expiration as usize,
+                user_id: selected_user.id,
+                jti,
+            };
+
+            let refresh_token = encode(&Header::default(), &refresh_claims, &REFRESH_KEYS.encoding)
+                .map_err(|_| AuthError::TokenCreation)?;
+
+            return Ok((
+                StatusCode::OK,
+                Json(AuthBody::new(access_token, Some(refresh_token))),
+            )
+                .into_response());
+        }
+        return Ok((StatusCode::OK, Json(AuthBody::new(access_token, None))).into_response());
+    }
+    let rand_sleep = rand::thread_rng()
+        .gen_range(std::time::Duration::from_millis(100)..=std::time::Duration::from_millis(500));
+    tokio::time::sleep(rand_sleep).await;
+    Err(Error::from(AuthError::WrongCredentials))
 }
 
-pub async fn mid_jwt_auth(header: Result<TypedHeader<Authorization<Bearer>>, TypedHeaderRejection>, req: Request, next: Next) -> Result<Response, AuthError> {
-	match header {
-		Ok(TypedHeader(Authorization(bearer))) => {
-			if req.uri() == "/v1/refresh" {
-				let response = next.run(req).await;
-				return Ok(response);
-			}
-			let token_data = decode::<Claims>(bearer.token(), &ACCESS_KEYS.decoding, &Validation::default()).map_err(|e| {
-				eprintln!("Decoding error: {}", e);
-				AuthError::InvalidToken
-			})?;
-			let response = next.run(req).await;
-			Ok(response)
-		}
-		Err(_) => {
-            Err(AuthError::InvalidToken)
-		}
-	}
+#[instrument(level = "trace", skip_all, fields(token))]
+async fn refresh_token(
+    headers: HeaderMap,
+    State(pool): State<sqlx::PgPool>,
+) -> Result<impl IntoResponse> {
+    if let Some(auth_header) = headers.get("Authorization") {
+        let auth_val = auth_header.to_str().map_err(|e| {
+            error!(name: "invalid_header", "Cannot convert auth header to string: {}", e);
+            AuthError::MissingCredentials
+        })?;
+        if let Some(auth_tuple) = auth_val.split_once(' ') {
+            if auth_tuple.0 == "Bearer" {
+                let token = auth_tuple.1;
+                let token_data = decode::<RefreshClaims>(
+                    &token,
+                    &REFRESH_KEYS.decoding,
+                    &Validation::default(),
+                )
+                .map_err(|e| {
+                    error!(name: "token_decoding_error", "Cannot decode token into claims: {}", e);
+                    AuthError::InvalidToken
+                })?;
+
+                let selected_user = sqlx::query_as!(
+                    crate::http::User,
+                    "SELECT * FROM auth.users WHERE id = $1",
+                    &token_data.claims.user_id
+                )
+                .fetch_one(&pool)
+                .await
+                .map_err(|e| {
+                    error!(name: "db_error", "Cannot fetch corresponding jti from db: {}", e);
+                    AuthError::TokenCreation
+                })?;
+                if let Some(jwt_id) = selected_user.jti {
+                    if jwt_id == token_data.claims.jti {
+                        let expiration = Utc::now()
+                            .checked_add_signed(Duration::hours(1))
+                            .expect("valid timestamp")
+                            .timestamp();
+
+                        let claims = AccessClaims {
+                            sub: selected_user.shortcode.clone(),
+                            exp: expiration as usize,
+                            user_id: selected_user.id,
+                            name: selected_user.first_name + &selected_user.surname,
+                            tier: selected_user.tier,
+                            admin: selected_user.admin,
+                        };
+
+                        let access_token =
+                            encode(&Header::default(), &claims, &ACCESS_KEYS.encoding)
+                                .map_err(|e| {
+                                    error!(name: "token_encoding_error", "Problem creating new access token: {}", e);
+                                    AuthError::TokenCreation
+                                })?;
+
+                        let expiration = Utc::now()
+                            .checked_add_signed(Duration::weeks(12))
+                            .expect("valid timestamp")
+                            .timestamp();
+
+                        let jti = crate::http::defaults::default_uuid();
+                        let _ = sqlx::query!(
+                            "UPDATE auth.users SET jti = $1 WHERE id = $2",
+                            jti,
+                            selected_user.id
+                        )
+                        .execute(&pool)
+                        .await
+                        .map_err(|e| {
+                            error!(name: "db_error", "Error when updating jti in db: {}", e);
+                            AuthError::TokenCreation
+                        })?;
+
+                        let refresh_claims = RefreshClaims {
+                            sub: selected_user.shortcode,
+                            exp: expiration as usize,
+                            user_id: selected_user.id,
+                            jti,
+                        };
+
+                        let refresh_token =
+                            encode(&Header::default(), &refresh_claims, &REFRESH_KEYS.encoding)
+                                .map_err(|e| {
+                                    error!(name: "token_encoding_error", "Problem when encoding new refresh token: {}",e);
+                                    AuthError::TokenCreation
+                                })?;
+
+                        return Ok((
+                            StatusCode::OK,
+                            Json(AuthBody::new(access_token, Some(refresh_token))),
+                        )
+                            .into_response());
+                    }
+                }
+                error!(name: "exception_error", "User does not have jti stored in db");
+                return Err(Error::from(AuthError::TokenCreation));
+            }
+        }
+        error!(name: "exception_error", "No bearer found in header");
+        return Err(Error::from(AuthError::MissingCredentials));
+    }
+    error!(name: "exception_error", "No authentication header found");
+    Err(Error::from(AuthError::MissingCredentials))
+}
+
+#[instrument(level = "trace", skip(req, next))]
+pub async fn mid_jwt_auth(
+    header: std::result::Result<TypedHeader<Authorization<Bearer>>, TypedHeaderRejection>,
+    mut req: Request,
+    next: Next,
+) -> Result<Response> {
+    match header {
+        Ok(TypedHeader(Authorization(bearer))) => {
+            let token_data = decode::<AccessClaims>(
+                bearer.token(),
+                &ACCESS_KEYS.decoding,
+                &Validation::default(),
+            )
+            .map_err(|e| {
+                error!(name: "token_decoding_error", "Cannot decode token into claims: {}", e);
+                AuthError::InvalidToken
+            })?;
+            req.extensions_mut().insert(token_data.claims);
+            Ok(next.run(req).await)
+        }
+        Err(_) => {
+            error!(name: "exception_error", "Authorization header not found");
+            Err(Error::from(AuthError::MissingCredentials))
+        }
+    }
 }
